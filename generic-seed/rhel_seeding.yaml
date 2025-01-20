@@ -104,7 +104,7 @@ spec:
               - Cloud
           uniqueItems: true
           default: rhel
-          ui:widget: checkboxes
+          # ui:widget: checkboxes
           ui:widget: hidden
         playbook:
           title: Playbook
