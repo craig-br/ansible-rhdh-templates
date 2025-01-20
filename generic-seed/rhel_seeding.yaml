@@ -12,7 +12,7 @@ metadata:
     - rhel-pattern
 spec:
   owner: RedHat
-  type: pattern
+  type: wizard
   parameters:
     - title: Project data
       description: Please provide the details for creating the RHEL use cases in Ansible Automation Platform
