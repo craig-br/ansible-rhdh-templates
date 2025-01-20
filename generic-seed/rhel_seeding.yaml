@@ -1,21 +1,8 @@
-apiVersion: scaffolder.backstage.io/v1beta3
-kind: Template
 
-metadata:
-  name: seed-rhel-content
-  title: Seed RHEL content
-  description: Create best practice RHEL content into AAP to manage time servers and OS services.
-  namespace: default
-  tags:
-    - aap-operations
-    - seed-rhel-content
-spec:
-  owner: RedHat
-  type: seed
 
   parameters:
     - title: Project data
-      description: Please provide the details to create the RHEL content in AAP.
+      description: Please provide the details for creating the RHEL use cases in Ansible Automation Platform
       required:
         - token
         - organization
@@ -29,21 +16,10 @@ spec:
           ui:backstage:
             review:
               show: false
-        # aapHostName:
-        #   title: AAP URL
-        #   type: string
-        #   ui:options:
-        #     rows: 5
-        aapValidateCerts:
-          title: AAP validate certs
-          type: boolean
-          default: false
-          ui:backstage:
-            review:
-              show: false
+          ui:widget: hidden
         organization:
           title: Organization
-          description: Select organization
+          description: Please choose the Inventory to use for the RHEL content
           resource: organizations
           ui:field: AAPResourcePicker
           default:
@@ -51,7 +27,7 @@ spec:
             name: Default
         jobInventory:
           title: Inventory
-          description: Select inventory
+          description: Please choose the Inventory to use for the RHEL content
           resource: inventories
           ui:field: AAPResourcePicker
           default:
@@ -64,9 +40,7 @@ spec:
           ui:options:
             rows: 5
           default: https://github.com/ansible/ansible-pattern-loader
-          ui:backstage:
-            review:
-              show: false
+          ui:widget: hidden
         scmBranch:
           title: Source control branch/tag/commit
           type: string
@@ -74,9 +48,7 @@ spec:
             rows: 5
           default: main
           ui:help: 'Branch to checkout. In addition to branches, you can input tags, commit hashes, and arbitrary refs. Some commit hashes and refs may not be available unless you also provide a custom refspec.'
-          ui:backstage:
-            review:
-              show: false
+          ui:widget: hidden
     - title: Template data
       description: Provide template data
       required:
@@ -120,6 +92,7 @@ spec:
           uniqueItems: true
           default: rhel
           ui:widget: checkboxes
+          ui:widget: hidden
         playbook:
           title: Playbook
           description: Select playbook
@@ -127,21 +100,18 @@ spec:
           ui:options:
             rows: 5
           default: seed_portal_content.yml
-          ui:backstage:
-            review:
-              show: false
+          ui:widget: hidden
         aapHostName:
           title: AAP URL
           type: string
           ui:options:
             rows: 5
+          default: https://34.205.78.142/
         aapValidateCerts:
           title: AAP validate certs
           type: boolean
           default: false
-          ui:backstage:
-            review:
-              show: false
+          ui:widget: hidden
       errorMessage:
         properties:
           useCases: 'Select at least one use case.'
