@@ -1,5 +1,18 @@
 
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
 
+metadata:
+  name: create-rhel-content
+  title: Create RHEL content
+  description: Create best practice RHEL content into AAP to manage time servers and OS services.
+  namespace: default
+  tags:
+    - aap-operations
+    - create-rhel-content
+spec:
+  owner: RedHat
+  type: seed
   parameters:
     - title: Project data
       description: Please provide the details for creating the RHEL use cases in Ansible Automation Platform
