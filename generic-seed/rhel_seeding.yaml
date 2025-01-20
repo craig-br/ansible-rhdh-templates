@@ -3,16 +3,16 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 
 metadata:
-  name: create-rhel-content
-  title: Create RHEL content
-  description: Create best practice RHEL content into AAP to manage time servers and OS services.
+  name: generic-seed
+  title: Create Red Hat Enterprise Linux Ansible contentto manage time services and OS services.
   namespace: default
   tags:
     - aap-operations
-    - create-rhel-content
+    - pattern
+    - rhel-pattern
 spec:
   owner: RedHat
-  type: seed
+  type: pattern
   parameters:
     - title: Project data
       description: Please provide the details for creating the RHEL use cases in Ansible Automation Platform
@@ -34,6 +34,7 @@ spec:
           title: Organization
           description: Please choose the Inventory to use for the RHEL content
           resource: organizations
+          type: string
           ui:field: AAPResourcePicker
           default:
             id: 1
@@ -42,6 +43,7 @@ spec:
           title: Inventory
           description: Please choose the Inventory to use for the RHEL content
           resource: inventories
+          type: string
           ui:field: AAPResourcePicker
           default:
             id: 1
@@ -66,9 +68,9 @@ spec:
       description: Provide template data
       required:
         - token
-        - useCases
+        # - useCases
         - playbook
-        - aapHostName
+        # - aapHostName
       properties:
         token:
           title: Token
@@ -88,22 +90,25 @@ spec:
               - name: rhel
                 url: https://github.com/ansible-collections/community.rhel_ops
                 version: main
-              - name: network
-                url: https://github.com/redhat-cop/network.backup
-                version: main
-              - name: windows
-                url: https://github.com/redhat-cop/infra.windows_ops
-                version: main
-              - name: cloud
-                url: https://github.com/redhat-cop/cloud.aws_ops
-                version: main
+              # - name: network
+              #   url: https://github.com/redhat-cop/network.backup
+              #   version: main
+              # - name: windows
+              #   url: https://github.com/redhat-cop/infra.windows_ops
+              #   version: main
+              # - name: cloud
+              #   url: https://github.com/redhat-cop/cloud.aws_ops
+              #   version: main
             enumNames:
               - RHEL
-              - Network
-              - Windows
-              - Cloud
+              # - Network
+              # - Windows
+              # - Cloud
           uniqueItems: true
-          default: rhel
+          default:
+            - name: rhel
+              url: https://github.com/ansible-collections/community.rhel_ops
+              version: main
           # ui:widget: checkboxes
           ui:widget: hidden
         playbook:
@@ -120,6 +125,7 @@ spec:
           ui:options:
             rows: 5
           default: https://34.205.78.142/
+          ui:widget: hidden
         aapValidateCerts:
           title: AAP validate certs
           type: boolean
