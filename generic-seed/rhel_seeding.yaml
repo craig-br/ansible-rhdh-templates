@@ -90,25 +90,22 @@ spec:
               - name: rhel
                 url: https://github.com/ansible-collections/community.rhel_ops
                 version: main
-              # - name: network
-              #   url: https://github.com/redhat-cop/network.backup
-              #   version: main
-              # - name: windows
-              #   url: https://github.com/redhat-cop/infra.windows_ops
-              #   version: main
-              # - name: cloud
-              #   url: https://github.com/redhat-cop/cloud.aws_ops
-              #   version: main
+              - name: network
+                url: https://github.com/redhat-cop/network.backup
+                version: main
+              - name: windows
+                url: https://github.com/redhat-cop/infra.windows_ops
+                version: main
+              - name: cloud
+                url: https://github.com/redhat-cop/cloud.aws_ops
+                version: main
             enumNames:
               - RHEL
               # - Network
               # - Windows
               # - Cloud
           uniqueItems: true
-          default:
-            - name: rhel
-              url: https://github.com/ansible-collections/community.rhel_ops
-              version: main
+          default: rhel
           # ui:widget: checkboxes
           ui:widget: hidden
         playbook:
