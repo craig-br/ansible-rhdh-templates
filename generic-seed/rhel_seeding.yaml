@@ -4,7 +4,8 @@ kind: Template
 
 metadata:
   name: rhel-pattern
-  title: Create Red Hat Enterprise Linux Ansible contentto manage time services and OS services.
+  title: Create RHEL content
+  description: Create Red Hat Enterprise Linux Ansible best practice content to manage time services and OS services.
   namespace: default
   tags:
     - aap-operations
@@ -23,7 +24,6 @@ spec:
       properties:
         token:
           title: Token
-          type: string
           description: Oauth2 token
           ui:field: AAPTokenField
           ui:backstage:
@@ -34,7 +34,6 @@ spec:
           title: Organization
           description: Please choose the Inventory to use for the RHEL content
           resource: organizations
-          type: string
           ui:field: AAPResourcePicker
           default:
             id: 1
@@ -43,7 +42,6 @@ spec:
           title: Inventory
           description: Please choose the Inventory to use for the RHEL content
           resource: inventories
-          type: string
           ui:field: AAPResourcePicker
           default:
             id: 1
