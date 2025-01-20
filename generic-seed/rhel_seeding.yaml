@@ -3,7 +3,7 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 
 metadata:
-  name: generic-seed
+  name: rhel-pattern
   title: Create Red Hat Enterprise Linux Ansible contentto manage time services and OS services.
   namespace: default
   tags:
@@ -12,7 +12,7 @@ metadata:
     - rhel-pattern
 spec:
   owner: RedHat
-  type: wizard
+  type: service
   parameters:
     - title: Project data
       description: Please provide the details for creating the RHEL use cases in Ansible Automation Platform
