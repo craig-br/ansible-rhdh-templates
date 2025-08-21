@@ -2,6 +2,57 @@
 
 This directory contains a collection of Ansible playbooks designed to be executed as Job Templates in Ansible Automation Platform (AAP). Each playbook serves different operational purposes and includes interactive prompts for customization.
 
+## 📑 Table of Contents
+
+### Quick Reference
+- [📁 Playbook Inventory](#-playbook-inventory)
+- [🚀 Quick Start](#-quick-start)
+
+### Playbook Documentation
+- [📖 Hello World Playbook](#hello-world-playbook)
+  - [Description](#description)
+  - [Features](#features)
+  - [Usage](#usage)
+  - [Expected Output](#expected-output)
+  - [Use Cases](#use-cases)
+- [📖 System Information Gathering Playbook](#system-information-gathering-playbook)
+  - [Description](#description-1)
+  - [Interactive Parameters](#interactive-parameters)
+  - [Features](#features-1)
+  - [Usage](#usage-1)
+  - [Manual Execution](#manual-execution)
+  - [Sample Output Report](#sample-output-report)
+  - [Use Cases](#use-cases-1)
+- [📖 File Operations Playbook](#file-operations-playbook)
+  - [Description](#description-2)
+  - [Interactive Parameters](#interactive-parameters-1)
+  - [Available Operations](#available-operations)
+    - [1. Create File/Directory](#1-create-filedirectory)
+    - [2. Copy File/Directory](#2-copy-filedirectory)
+    - [3. Move/Rename File/Directory](#3-moverename-filedirectory)
+    - [4. Delete File/Directory](#4-delete-filedirectory)
+    - [5. Change Permissions](#5-change-permissions)
+    - [6. Search for Files](#6-search-for-files)
+  - [Safety Features](#safety-features)
+  - [Usage](#usage-2)
+  - [Manual Execution Examples](#manual-execution-examples)
+  - [Use Cases](#use-cases-2)
+
+### Integration & Operations
+- [🔧 AAP Integration](#-aap-integration)
+  - [Job Template Setup](#job-template-setup)
+  - [Execution Best Practices](#execution-best-practices)
+  - [Monitoring and Logging](#monitoring-and-logging)
+
+### Support & Maintenance
+- [🛠️ Troubleshooting](#️-troubleshooting)
+  - [Common Issues](#common-issues)
+  - [Error Messages](#error-messages)
+- [📚 Additional Resources](#-additional-resources)
+- [🔄 Version History](#-version-history)
+
+---
+
 ## 📁 Playbook Inventory
 
 | Playbook | Purpose | Complexity | Interactive |
