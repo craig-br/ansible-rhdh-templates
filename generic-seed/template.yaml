@@ -1,3 +1,4 @@
+---
 apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 
@@ -26,9 +27,6 @@ spec:
           type: string
           description: Oauth2 token
           ui:field: AAPTokenField
-          ui:backstage:
-            review:
-              show: false
         scmType:
           title: Select source control option
           type: string
@@ -42,17 +40,13 @@ spec:
           description: Select organization
           resource: organizations
           ui:field: AAPResourcePicker
-          default:
-            id: 1
-            name: Default
+          default: Default
         jobInventory:
           title: Inventory
           description: Select inventory
           resource: inventories
           ui:field: AAPResourcePicker
-          default:
-            id: 1
-            name: Default
+          default: Demo Inventory
         credentials:
           title: Credentials
           description: Select SCM credential for Private repositories
@@ -186,7 +180,7 @@ spec:
        input:
          token: ${{ parameters.token }}
          values:
-           template: ${{steps['create-template'].output.template}}
+           template: ${{steps['create-template'].output.template.name}}
      - id: clean-up
        name: Clean up
        action: rhaap:clean-up
