@@ -455,7 +455,7 @@ ansible all -m file -a "path=/tmp state=directory mode=0755"
 ## 📚 Additional Resources
 
 ### Documentation
-- [`AAP_Survey_Questions.md`](../AAP_Survey_Questions.md) - Complete survey configuration
+- [`AAP_Survey_Questions.md`](./AAP_Survey_Questions.md) - Complete survey configuration
 - [Ansible Documentation](https://docs.ansible.com/) - Official Ansible docs
 - [AAP Documentation](https://access.redhat.com/documentation/en-us/red_hat_ansible_automation_platform/) - Platform-specific guides
 
