@@ -1,7 +1,7 @@
 ---
 - name: File Operations Template
   hosts: all
-  gather_facts: false
+  gather_facts: true
   
   vars_prompt:
     - name: operation_type
