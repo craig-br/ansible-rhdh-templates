@@ -19,6 +19,7 @@ metadata:
     - playbook
     {%- elif values.applicationType == "collection-project" %}
     - collection
+    {%- endif %}
   annotations:
     backstage.io/techdocs-ref: dir:.
     {%- if values.sourceControl == "gitlab.com" %}
