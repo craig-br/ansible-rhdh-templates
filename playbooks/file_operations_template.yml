@@ -48,10 +48,15 @@
       private: false
 
   tasks:
+    - name: Extract operation number from selection
+      set_fact:
+        operation_number: "{{ operation_type.split(' - ')[0] if ' - ' in operation_type else operation_type }}"
+
     - name: Display operation parameters
       debug:
         msg:
           - "Operation type: {{ operation_type }}"
+          - "Operation number: {{ operation_number }}"
           - "Source path: {{ source_path }}"
           - "Destination path: {{ destination_path }}"
           - "File permissions: {{ file_permissions }}"
@@ -78,7 +83,7 @@
           debug:
             msg: "File created successfully at: {{ source_path }}"
           when: create_result is succeeded
-      when: operation_type == "1"
+      when: operation_number == "1"
 
     - name: Copy file/directory operation
       block:
@@ -105,7 +110,7 @@
           debug:
             msg: "Error: Source path {{ source_path }} does not exist"
           when: not source_stat.stat.exists
-      when: operation_type == "2"
+      when: operation_number == "2"
 
     - name: Move/rename operation
       block:
@@ -128,7 +133,7 @@
           debug:
             msg: "Error: Source path {{ source_path }} does not exist"
           when: not source_stat.stat.exists
-      when: operation_type == "3"
+      when: operation_number == "3"
 
     - name: Delete operation
       block:
@@ -158,7 +163,7 @@
           debug:
             msg: "Path {{ source_path }} does not exist"
           when: not delete_stat.stat.exists
-      when: operation_type == "4"
+      when: operation_number == "4"
 
     - name: Change permissions operation
       block:
@@ -183,7 +188,7 @@
           debug:
             msg: "Error: Path {{ source_path }} does not exist"
           when: not perm_stat.stat.exists
-      when: operation_type == "5"
+      when: operation_number == "5"
 
     - name: Search for files operation
       block:
@@ -208,14 +213,14 @@
           debug:
             msg: "No files found matching pattern '{{ search_pattern }}' in {{ search_directory }}"
           when: search_results.files | length == 0
-      when: operation_type == "6"
+      when: operation_number == "6"
 
     - name: Invalid operation
       debug:
         msg: "Invalid operation type: {{ operation_type }}. Please choose 1-6."
-      when: operation_type not in ["1", "2", "3", "4", "5", "6"]
+      when: operation_number not in ["1", "2", "3", "4", "5", "6"]
 
     - name: Operation summary
       debug:
         msg: "File operation completed successfully!"
-      when: operation_type in ["1", "2", "3", "4", "5", "6"]
+      when: operation_number in ["1", "2", "3", "4", "5", "6"]
