@@ -1,0 +1,217 @@
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: provision-database
+  title: 🚀 Provision a Cloud Database (Test-a-thon)
+  description: >
+    This is a demo template with
+    dynamic fields, markdown, emojis, validation, and a summary step. 
+    It does not create actual DB instances
+spec:
+  owner: team-devops
+  type: task
+
+  parameters:
+    - title: Provision a Cloud Database (Demo)
+      required:
+        - token
+        - inventory
+        - credentials
+        - projectName
+        - dbType
+      properties:
+        token:
+          title: AAP Access Token
+          type: string
+          description: |
+            Enter your access token for secure authentication.
+          ui:field: AAPTokenField
+          ui:backstage:
+            review:
+              show: false
+          ui:widget: hidden
+        inventory:
+          title: Server Group
+          description: |
+            Choose the group of servers you want to update. This will apply your settings to all selected servers.
+          resource: inventories
+          ui:field: AAPResourcePicker
+        credentials:
+          title: Login Credentials
+          description: |
+            Select the credentials needed to connect to your servers.
+          type: array
+          ui:field: AAPResourcePicker
+          resource: credentials
+        projectName:
+          title: Project Name
+          type: string
+          description: |
+            This will be used to tag your database resources.
+          default: "demo-project"
+        dbType:
+          title: Database Type
+          type: string
+          enum: ["🐘 PostgreSQL", "🐬 MySQL", "🍃 MongoDB"]
+          description: |
+            **Choose your database engine:** - 🐘 **PostgreSQL** for transactional workloads  
+            - 🐬 **MySQL** for web applications  
+            - 🍃 **MongoDB** for document storage  
+            [Compare engines](https://db-engines.com/en/ranking)
+        enableBackups:
+          title: Enable Backups?
+          type: boolean
+          default: false
+          description: |
+            _Enable automated backups for this database?_
+      dependencies:
+        dbType:
+          oneOf:
+            - properties:
+                dbType:
+                  const: "🐘 PostgreSQL"
+                dbConfig:
+                  type: object
+                  title: PostgreSQL Settings
+                  description: |
+                    **PostgreSQL** is robust and scalable.  
+                    [PostgreSQL Docs](https://www.postgresql.org/docs/)
+                  required: [version, storage]
+                  properties:
+                    version:
+                      type: number
+                      enum: [13, 14, 15]
+                      title: PostgreSQL Version
+                      default: 15
+                      description: |
+                        Choose a supported PostgreSQL version.
+                    storage:
+                      type: number
+                      title: Storage (GB)
+                      default: 100
+                      description: |
+                        Specify storage size (max 1024 GB).  
+                        _Tip: 100 GB is usually enough for small projects!_
+                      minimum: 1
+                      maximum: 1024
+                      errorMessage:
+                        maximum: 'PostgreSQL storage cannot exceed 1024 GB.'
+                        minimum: 'Storage must be at least 1 GB.'
+            - properties:
+                dbType:
+                  const: "🐬 MySQL"
+                dbConfig:
+                  type: object
+                  title: MySQL Settings
+                  description: |
+                    **MySQL** is widely used for web applications.  
+                    [MySQL Docs](https://dev.mysql.com/doc/)
+                  required: [version, storage]
+                  properties:
+                    version:
+                      type: string
+                      enum: ["5.7", "8.0"]
+                      title: MySQL Version
+                      default: "8.0"
+                      description: |
+                        Choose a supported MySQL version.
+                    storage:
+                      type: number
+                      title: Storage (GB)
+                      default: 50
+                      description: |
+                        Specify storage size (max 512 GB).  
+                        _Tip: 50 GB is usually enough for most web apps!_
+                      minimum: 1
+                      maximum: 512
+                      errorMessage:
+                        maximum: 'MySQL storage cannot exceed 512 GB.'
+                        minimum: 'Storage must be at least 1 GB.'
+            - properties:
+                dbType:
+                  const: "🍃 MongoDB"
+                dbConfig:
+                  type: object
+                  title: MongoDB Settings
+                  description: |
+                    **MongoDB** is ideal for document storage.  
+                    [MongoDB Docs](https://www.mongodb.com/docs/)
+                  required: [clusterSize, storage]
+                  properties:
+                    clusterSize:
+                      type: string
+                      enum: [Single, ReplicaSet]
+                      title: Cluster Size
+                      default: ReplicaSet
+                      description: |
+                        Choose a cluster size for MongoDB.
+                    storage:
+                      type: number
+                      title: Storage (GB)
+                      default: 200
+                      description: |
+                        Specify storage size (max 2048 GB).  
+                        _Tip: 200 GB is a good starting point for most projects!_
+                      minimum: 1
+                      maximum: 2048
+                      errorMessage:
+                        maximum: 'MongoDB storage cannot exceed 2048 GB.'
+                        minimum: 'Storage must be at least 1 GB.'
+        enableBackups:
+          oneOf:
+            - properties:
+                enableBackups:
+                  const: true
+                backupConfig:
+                  type: object
+                  title: Backup Settings
+                  description: |
+                    Configure backup options for your database.
+                  required: [frequency, retention]
+                  properties:
+                    frequency:
+                      type: string
+                      enum: [Daily, Weekly]
+                      title: Backup Frequency
+                      default: Daily
+                      description: |
+                        How often should backups occur?
+                    retention:
+                      type: number
+                      title: Retention (days)
+                      default: 7
+                      minimum: 1
+                      maximum: 365
+                      description: |
+                        How many days should backups be retained? (1-365)
+                      errorMessage:
+                        maximum: 'Retention cannot exceed 365 days.'
+                        minimum: 'Retention must be at least 1 day.'
+            - properties:
+                enableBackups:
+                  const: false
+
+  steps:
+    - id: submit
+      name: Create database
+      action: debug:log
+      input:
+        message: |
+          Your request for project ${{ parameters.projectName }} has been successfully submitted.
+        
+          Summary:
+            Project: ${{ parameters.projectName }}
+            Database: ${{ parameters.dbType }}
+            Storage: ${{ parameters.dbConfig.storage }} GB
+          {% if parameters.dbConfig.version %}
+            Version: ${{ parameters.dbConfig.version }}
+          {% endif %}
+          {% if parameters.dbConfig.clusterSize %}
+            Cluster Size: ${{ parameters.dbConfig.clusterSize }}
+          {% endif %}
+            Backups Enabled: ${{ parameters.enableBackups }}
+          {% if parameters.enableBackups and parameters.backupConfig %}
+            Frequency: ${{ parameters.backupConfig.frequency }}
+            Retention: ${{ parameters.backupConfig.retention }} days
+          {% endif %}
+
