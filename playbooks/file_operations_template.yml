@@ -1,0 +1,226 @@
+---
+- name: File Operations Template
+  hosts: all
+  gather_facts: true
+  
+  vars_prompt:
+    - name: operation_type
+      prompt: |
+        Select file operation:
+        1) Create file/directory
+        2) Copy file/directory
+        3) Move/rename file/directory
+        4) Delete file/directory
+        5) Change permissions
+        6) Search for files
+        Enter choice (1-6)
+      default: "1"
+      private: false
+    
+    - name: source_path
+      prompt: "Enter source file/directory path"
+      default: "/tmp/example.txt"
+      private: false
+    
+    - name: destination_path
+      prompt: "Enter destination path (for copy/move operations)"
+      default: "/tmp/backup/"
+      private: false
+    
+    - name: file_permissions
+      prompt: "Enter file permissions (e.g., 0644, 0755)"
+      default: "0644"
+      private: false
+    
+    - name: search_pattern
+      prompt: "Enter search pattern (for search operations, e.g., '*.log')"
+      default: "*.txt"
+      private: false
+    
+    - name: search_directory
+      prompt: "Enter directory to search in"
+      default: "/tmp"
+      private: false
+    
+    - name: file_content
+      prompt: "Enter content for new file (if creating)"
+      default: "This is a test file created by Ansible"
+      private: false
+
+  tasks:
+    - name: Extract operation number from selection
+      set_fact:
+        operation_number: "{{ operation_type.split(' - ')[0] if ' - ' in operation_type else operation_type }}"
+
+    - name: Display operation parameters
+      debug:
+        msg:
+          - "Operation type: {{ operation_type }}"
+          - "Operation number: {{ operation_number }}"
+          - "Source path: {{ source_path }}"
+          - "Destination path: {{ destination_path }}"
+          - "File permissions: {{ file_permissions }}"
+          - "Search pattern: {{ search_pattern }}"
+          - "Search directory: {{ search_directory }}"
+
+    - name: Create file operation
+      block:
+        - name: Create directory if needed
+          file:
+            path: "{{ source_path | dirname }}"
+            state: directory
+            mode: '0755'
+          when: "'/' in source_path"
+
+        - name: Create file with content
+          copy:
+            content: "{{ file_content }}\nCreated on: {{ ansible_date_time.iso8601 }}\n"
+            dest: "{{ source_path }}"
+            mode: "{{ file_permissions }}"
+          register: create_result
+
+        - name: Confirm file creation
+          debug:
+            msg: "File created successfully at: {{ source_path }}"
+          when: create_result is succeeded
+      when: operation_number == "1"
+
+    - name: Copy file/directory operation
+      block:
+        - name: Check if source exists
+          stat:
+            path: "{{ source_path }}"
+          register: source_stat
+
+        - name: Copy file or directory
+          copy:
+            src: "{{ source_path }}"
+            dest: "{{ destination_path }}"
+            mode: "{{ file_permissions }}"
+            remote_src: true
+          register: copy_result
+          when: source_stat.stat.exists
+
+        - name: Confirm copy operation
+          debug:
+            msg: "Successfully copied {{ source_path }} to {{ destination_path }}"
+          when: copy_result is succeeded
+
+        - name: Source not found error
+          debug:
+            msg: "Error: Source path {{ source_path }} does not exist"
+          when: not source_stat.stat.exists
+      when: operation_number == "2"
+
+    - name: Move/rename operation
+      block:
+        - name: Check if source exists
+          stat:
+            path: "{{ source_path }}"
+          register: source_stat
+
+        - name: Move/rename file or directory
+          command: mv "{{ source_path }}" "{{ destination_path }}"
+          register: move_result
+          when: source_stat.stat.exists
+
+        - name: Confirm move operation
+          debug:
+            msg: "Successfully moved {{ source_path }} to {{ destination_path }}"
+          when: move_result is succeeded
+
+        - name: Source not found error
+          debug:
+            msg: "Error: Source path {{ source_path }} does not exist"
+          when: not source_stat.stat.exists
+      when: operation_number == "3"
+
+    - name: Delete operation
+      block:
+        - name: Check if path exists
+          stat:
+            path: "{{ source_path }}"
+          register: delete_stat
+
+        - name: Confirm deletion (safety check)
+          debug:
+            msg: "WARNING: About to delete {{ source_path }}"
+          when: delete_stat.stat.exists
+
+        - name: Delete file or directory
+          file:
+            path: "{{ source_path }}"
+            state: absent
+          register: delete_result
+          when: delete_stat.stat.exists
+
+        - name: Confirm deletion
+          debug:
+            msg: "Successfully deleted: {{ source_path }}"
+          when: delete_result is succeeded
+
+        - name: Path not found
+          debug:
+            msg: "Path {{ source_path }} does not exist"
+          when: not delete_stat.stat.exists
+      when: operation_number == "4"
+
+    - name: Change permissions operation
+      block:
+        - name: Check if path exists
+          stat:
+            path: "{{ source_path }}"
+          register: perm_stat
+
+        - name: Change file/directory permissions
+          file:
+            path: "{{ source_path }}"
+            mode: "{{ file_permissions }}"
+          register: perm_result
+          when: perm_stat.stat.exists
+
+        - name: Confirm permission change
+          debug:
+            msg: "Successfully changed permissions of {{ source_path }} to {{ file_permissions }}"
+          when: perm_result is succeeded
+
+        - name: Path not found error
+          debug:
+            msg: "Error: Path {{ source_path }} does not exist"
+          when: not perm_stat.stat.exists
+      when: operation_number == "5"
+
+    - name: Search for files operation
+      block:
+        - name: Search for files matching pattern
+          find:
+            paths: "{{ search_directory }}"
+            patterns: "{{ search_pattern }}"
+            recurse: true
+          register: search_results
+
+        - name: Display search results
+          debug:
+            msg: "Found {{ search_results.files | length }} files matching '{{ search_pattern }}' in {{ search_directory }}"
+
+        - name: List found files
+          debug:
+            msg: "{{ item.path }} ({{ item.size }} bytes, modified: {{ item.mtime | int | to_datetime }})"
+          loop: "{{ search_results.files }}"
+          when: search_results.files | length > 0
+
+        - name: No files found
+          debug:
+            msg: "No files found matching pattern '{{ search_pattern }}' in {{ search_directory }}"
+          when: search_results.files | length == 0
+      when: operation_number == "6"
+
+    - name: Invalid operation
+      debug:
+        msg: "Invalid operation type: {{ operation_type }}. Please choose 1-6."
+      when: operation_number not in ["1", "2", "3", "4", "5", "6"]
+
+    - name: Operation summary
+      debug:
+        msg: "File operation completed successfully!"
+      when: operation_number in ["1", "2", "3", "4", "5", "6"]

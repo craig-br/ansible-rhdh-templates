@@ -1,0 +1,22 @@
+---
+- name: Hello World Playbook
+  hosts: all
+  gather_facts: false
+  
+  tasks:
+    - name: Display hello world message
+      debug:
+        msg: "Hello, World! This playbook is running from AAP job template."
+    
+    - name: Display current date and time
+      debug:
+        msg: "Current date and time: {{ ansible_date_time.iso8601 }}"
+      when: ansible_date_time is defined
+    
+    - name: Display target host information
+      debug:
+        msg: "Running on host: {{ inventory_hostname }}"
+    
+    - name: Simple success message
+      debug:
+        msg: "Hello World playbook executed successfully!"

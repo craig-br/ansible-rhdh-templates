@@ -1,0 +1,121 @@
+---
+- name: System Information Gathering Template
+  hosts: all
+  gather_facts: true
+  
+  vars_prompt:
+    - name: target_user
+      prompt: "Enter the username to check (leave empty for current user)"
+      default: ""
+      private: false
+    
+    - name: log_file_path
+      prompt: "Enter path to save system info log (e.g., /tmp/system_info.log)"
+      default: "/tmp/system_info.log"
+      private: false
+    
+    - name: include_processes
+      prompt: "Include running processes? (yes/no)"
+      default: "no"
+      private: false
+    
+    - name: include_network
+      prompt: "Include network information? (yes/no)"
+      default: "yes"
+      private: false
+
+  tasks:
+    - name: Display playbook parameters
+      debug:
+        msg:
+          - "Target user: {{ target_user if target_user != '' else 'current user' }}"
+          - "Log file path: {{ log_file_path }}"
+          - "Include processes: {{ include_processes }}"
+          - "Include network info: {{ include_network }}"
+
+    - name: Gather basic system information
+      debug:
+        msg:
+          - "Hostname: {{ ansible_hostname }}"
+          - "Operating System: {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "Architecture: {{ ansible_architecture }}"
+          - "Kernel: {{ ansible_kernel }}"
+          - "Total Memory: {{ ansible_memtotal_mb }} MB"
+          - "Available Memory: {{ ansible_memfree_mb }} MB"
+          - "CPU Count: {{ ansible_processor_vcpus }}"
+          - "Uptime: {{ ansible_uptime_seconds }} seconds"
+
+    - name: Get user information
+      user:
+        name: "{{ target_user if target_user != '' else ansible_user_id }}"
+        state: present
+      register: user_info
+      check_mode: true
+
+    - name: Display user information
+      debug:
+        msg:
+          - "User: {{ user_info.name }}"
+          - "UID: {{ user_info.uid }}"
+          - "GID: {{ user_info.group }}"
+          - "Home Directory: {{ user_info.home }}"
+          - "Shell: {{ user_info.shell }}"
+
+    - name: Get disk usage information
+      shell: df -h
+      register: disk_usage
+      changed_when: false
+
+    - name: Display disk usage
+      debug:
+        msg: "{{ disk_usage.stdout_lines }}"
+
+    - name: Get running processes (if requested)
+      shell: ps aux --sort=-%cpu | head -20
+      register: top_processes
+      changed_when: false
+      when: include_processes | bool
+
+    - name: Display top processes
+      debug:
+        msg: "{{ top_processes.stdout_lines }}"
+      when: include_processes | bool
+
+    - name: Get network information (if requested)
+      setup:
+        filter: ansible_default_ipv4
+      when: include_network | bool
+
+    - name: Display network information
+      debug:
+        msg:
+          - "Default IPv4 Address: {{ ansible_default_ipv4.address | default('N/A') }}"
+          - "Default Gateway: {{ ansible_default_ipv4.gateway | default('N/A') }}"
+          - "Default Interface: {{ ansible_default_ipv4.interface | default('N/A') }}"
+      when: include_network | bool
+
+    - name: Create system information log file
+      copy:
+        content: |
+          System Information Report
+          Generated on: {{ ansible_date_time.iso8601 }}
+          Hostname: {{ ansible_hostname }}
+          OS: {{ ansible_distribution }} {{ ansible_distribution_version }}
+          Architecture: {{ ansible_architecture }}
+          Kernel: {{ ansible_kernel }}
+          Memory: {{ ansible_memfree_mb }}/{{ ansible_memtotal_mb }} MB (free/total)
+          CPU Count: {{ ansible_processor_vcpus }}
+          Uptime: {{ ansible_uptime_seconds }} seconds
+          {% if include_network | bool %}
+          IP Address: {{ ansible_default_ipv4.address | default('N/A') }}
+          Gateway: {{ ansible_default_ipv4.gateway | default('N/A') }}
+          {% endif %}
+          User: {{ target_user if target_user != '' else ansible_user_id }}
+        dest: "{{ log_file_path }}"
+        mode: '0644'
+      register: log_result
+
+    - name: Confirm log file creation
+      debug:
+        msg: "System information saved to: {{ log_file_path }}"
+      when: log_result is succeeded
