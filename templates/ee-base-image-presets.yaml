@@ -1,0 +1,16 @@
+# Source of truth for Portal EE Builder base image presets (hand-synced into EE templates).
+# https://access.redhat.com/support/policy/updates/ansible-automation-platform
+version: 1
+default: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel8:2.18
+recommended: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel8:2.18
+presets:
+  - value: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel8:2.16
+    label: Red Hat Ansible Minimal EE - Ansible Core 2.16 (RHEL 8)
+  - value: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16
+    label: Red Hat Ansible Minimal EE - Ansible Core 2.16 (RHEL 9)
+  - value: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel8:2.18
+    label: Red Hat Ansible Minimal EE - Ansible Core 2.18 (RHEL 8)
+  - value: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.18
+    label: Red Hat Ansible Minimal EE - Ansible Core 2.18 (RHEL 9)
+  - value: registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.20
+    label: Red Hat Ansible Minimal EE - Ansible Core 2.20 (RHEL 9, AAP 2.7)

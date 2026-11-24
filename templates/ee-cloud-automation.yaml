@@ -16,23 +16,25 @@ spec:
   parameters:
     # Step 1: Base Image Selection
     - title: Base Image
-      description: Configure the base image for your execution environment
+      description: Configure the base image for your execution environment. Supported ee-minimal images for AAP 2.5–2.7 are described in the [Ansible Automation Platform lifecycle](https://access.redhat.com/support/policy/updates/ansible-automation-platform).
       properties:
         baseImage:
           title: Base execution environment image
           type: string
           default: 'registry.redhat.io/ansible-automation-platform/ee-minimal-rhel8:2.18'
           enum:
-            - 'registry.redhat.io/ansible-automation-platform/ee-minimal-rhel8:2.18'
-            - 'registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.18'
             - 'registry.redhat.io/ansible-automation-platform/ee-minimal-rhel8:2.16'
             - 'registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.16'
+            - 'registry.redhat.io/ansible-automation-platform/ee-minimal-rhel8:2.18'
+            - 'registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.18'
+            - 'registry.redhat.io/ansible-automation-platform/ee-minimal-rhel9:2.20'
             - 'custom'
           enumNames:
-            - 'Red Hat Ansible Minimal EE - Ansible Core 2.18 (RHEL 8)'
-            - 'Red Hat Ansible Minimal EE - Ansible Core 2.18 (RHEL 9)'
             - 'Red Hat Ansible Minimal EE - Ansible Core 2.16 (RHEL 8)'
             - 'Red Hat Ansible Minimal EE - Ansible Core 2.16 (RHEL 9)'
+            - 'Red Hat Ansible Minimal EE - Ansible Core 2.18 (RHEL 8)'
+            - 'Red Hat Ansible Minimal EE - Ansible Core 2.18 (RHEL 9)'
+            - 'Red Hat Ansible Minimal EE - Ansible Core 2.20 (RHEL 9, AAP 2.7)'
             - 'Custom Image'
           ui:field: BaseImagePicker
       dependencies:
