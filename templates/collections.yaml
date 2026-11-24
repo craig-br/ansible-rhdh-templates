@@ -4,6 +4,8 @@ metadata:
   name: ansible-collection-template
   title: Create Ansible Collection Project
   description: Create a new starter collection Git project preconfigured with best practices.
+  annotations:
+    ansible.com/template-source: scm
   tags:
     - recommended
     - ansible
@@ -112,8 +114,6 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts:
-          - ${{ parameters.sourceControl }}
         description: ${{ parameters.description }}
         repoUrl: ${{ steps.ansible.output.repoUrl }}
         repoVisibility: 'public'
